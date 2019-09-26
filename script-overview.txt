@@ -1,0 +1,40 @@
+#!/bin/bash
+
+### Step 1 - check if the user is root, or running the script as 'sudo'.
+### 		 If the user is not running as root or 'sudo', the script will exit
+
+if [[ $UID -ne 0 ]]; then
+   echo "This script must be run as root or with 'sudo'" 
+   exit 1
+fi
+
+### Step 2 - cleaning the yum cache
+
+echo "Clearing yum cache"
+yum clean all
+
+
+### Step 3 - setting vars for the check-update compontent of the script									
+
+cmd="/usr/bin/yum check-update"
+status=$?
+update="/usr/bin/yum update"
+
+### Step 4 - run 'yum check-update, and return the exit status
+
+$cmd
+status=$?
+
+### Step 5 - 'yum check-update' has an exit status of 100 if there are updates.
+###		 If there are updates, then run 'yum update.
+###	     If the exit status is not 100, then exit
+
+if [ $status -eq 100 ]
+then 
+	echo "Updates are available. Running 'yum update'"
+	### The script has purposely been configured to not automatically run 'yum update -y', as this will allow the user to verify the package changes
+	$update
+	exit 0	
+else
+	echo "No system updates are available"
+	exit 1
