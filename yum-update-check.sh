@@ -23,3 +23,4 @@ then
 else
 	echo "No system updates are available"
 	exit 1
+fi
